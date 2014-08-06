@@ -11,11 +11,12 @@
   onBuildWrite: function (moduleName, path, singleContents) {
     return singleContents.replace(/jsx!/g, '');
   },
+  stubModules: ['jsx'],
 
   modules: [
     {
       name: "main",
-      exclude: ["react", "jsx"]
+      exclude: ["react", "JSXTransformer", "text"]
     }
   ]
 })
