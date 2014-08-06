@@ -40,17 +40,19 @@ and [React](http://facebook.github.io/react/index.html):
     });
 
 Then, you can reference JSX files via the `jsx!` plugin syntax. For example, to load
-the `Timer.jsx` file that is in a `components` directory:
+the `Timer.js` file that is in a `components` directory:
 
     require(['jsx!components/Timer'], function (Timer) {
 
     });
 
 The Plugin is then going to load the JavaScript source file
-`components/Timer.jsx`, parse it with Facebook's JSXTransformer and execute the
+`components/Timer.js`, parse it with Facebook's JSXTransformer and execute the
 resulting JavaScript source.
 
-To make it load a file with a `.jsx` extension (`components/Timer.jsx`) add the following parameter to the RequireJS config object:
+## Configuration options <a name="options"></a>
+
+To load a file with a `.jsx` extension (`components/Timer.jsx`) add the following parameter to the RequireJS config object:
 
     require.config({
       // ...
@@ -64,28 +66,22 @@ To make it load a file with a `.jsx` extension (`components/Timer.jsx`) add the 
 
 ## Build <a name="build"></a>
 
-Some specific configuration is necessary to make optimization by `r.js`
-possible.
-
-In your `build.js` you should have this to remove `jsx!` from module names in
-the optimized JavaScript.
-
-    onBuildWrite: function (moduleName, path, singleContents) {
-      return singleContents.replace(/jsx!/g, '');
-    },
 
 To exclude `jsx.js` and, more importantly `JSXTransformer.js`, you should add
 `"jsx"` to the `exclude` list in the `modules` field of the `build.js`.
-`JSXTransformer.js` (dependency of `jsx`) gets excluded by excluding `jsx`.
+
+You should also stub the module 'jsx' so it isn't loaded.
 
 Add `"react"` if you want it to be in it's own build file.
 
+    stubModules: ['jsx']
     modules: [
       {
         name: "main",
-        exclude: ["react", "jsx"]
+        exclude: ["react", "jsx", "JSXTransformer"]
       }
     ]
+
 
 ### HACK to fix an issue with the preprocessing of JSXTransformer
 
@@ -95,4 +91,7 @@ occurrences of `'use strict'` by an expression like `'use ' + 'strict'`.
 
 You don't have to do it if you use the
 [JSXTransformer-0.11.1.js](https://raw.github.com/philix/jsx-requirejs-plugin/master/js/JSXTransformer-0.11.1.js)
-provided here.
+provided here. Or using the build option `"useStrict":true`
+
+`r.js` also has an issue with JSXTransformers use of source maps, there is no way around this now, either use the one 
+provided or 
